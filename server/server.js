@@ -26,6 +26,11 @@ app.use(bodyParser());
 app.use(helmet());
 app.use(express.json());
 
+// test route
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ message: 'API is healthy' });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
