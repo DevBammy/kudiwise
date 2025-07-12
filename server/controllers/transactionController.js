@@ -22,19 +22,35 @@ export const getTransactions = async (req, res) => {
   const { type, category, startDate, endDate, minAmount, maxAmount } =
     req.query;
 
-  const filters = { user: req.user._id };
+  const filters = {
+    user: req.user._id,
+  };
 
-  if (type) filters.type = type;
-  if (category) filters.category = category;
-  if (startDate || endDate) {
-    filters.date = {};
-    if (startDate) filters.date.$gte = new Date(startDate);
-    if (endDate) filters.date.$lte = new Date(endDate);
+  // Only add filters if values are provided
+  if (type) {
+    filters.type = type;
   }
+
+  if (category) {
+    filters.category = category;
+  }
+
+  if (startDate || endDate) {
+    const dateFilter = {};
+    if (startDate) dateFilter.$gte = new Date(startDate);
+    if (endDate) dateFilter.$lte = new Date(endDate);
+    if (Object.keys(dateFilter).length > 0) {
+      filters.date = dateFilter;
+    }
+  }
+
   if (minAmount || maxAmount) {
-    filters.amount = {};
-    if (minAmount) filters.amount.$gte = Number(minAmount);
-    if (maxAmount) filters.amount.$lte = Number(maxAmount);
+    const amountFilter = {};
+    if (minAmount) amountFilter.$gte = Number(minAmount);
+    if (maxAmount) amountFilter.$lte = Number(maxAmount);
+    if (Object.keys(amountFilter).length > 0) {
+      filters.amount = amountFilter;
+    }
   }
 
   try {
