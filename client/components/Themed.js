@@ -3,30 +3,15 @@ import {
   Text as ThemedText,
   View as ThemedView,
 } from 'react-native';
-import { useThemeColor } from '../hooks/useThemeColor';
 
-export function View({ style, lightColor, darkColor, ...otherProps }) {
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    'background'
-  );
-
-  return <ThemedView style={[{ backgroundColor }, style]} {...otherProps} />;
+export function View({ style, ...otherProps }) {
+  return <ThemedView style={style} {...otherProps} />;
 }
 
-export function Text({
-  style,
-  lightColor,
-  darkColor,
-  type = 'default',
-  ...rest
-}) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-
+export function Text({ style, type = 'default', ...rest }) {
   return (
     <ThemedText
       style={[
-        { color },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
@@ -43,24 +28,25 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     lineHeight: 24,
+    fontFamily: 'reg',
   },
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: '600',
+    fontFamily: 'mid',
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 22,
+    fontFamily: 'big',
     lineHeight: 32,
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontFamily: 'big',
   },
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+    color: '#242529',
   },
 });

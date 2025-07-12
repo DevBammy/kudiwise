@@ -5,10 +5,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        orange: '#EF7228',
-        txt: '#000000',
+        yellow: '#FEEDBA',
+        blue: '#D6CEFF',
+        text: '#242529',
         bg: '#FFF2E9',
-        white: '#ffffff',
+        white: '#fafafa',
       },
       boxShadow: {
         shadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
