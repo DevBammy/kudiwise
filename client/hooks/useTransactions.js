@@ -1,10 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import { API_URL } from '../constants/api';
-
-import { useCallback, useState } from 'react';
-import { Alert } from 'react-native';
-import { API_URL } from '../constants/api';
 import { useAuth } from '../context/AuthContext';
 
 export const useTransactions = () => {
@@ -26,6 +22,7 @@ export const useTransactions = () => {
       });
       if (!response.ok) throw new Error('Failed to add transaction');
       await loadData();
+      Alert.alert('Success', 'Transaction added successfully');
     } catch (error) {
       console.error('Error adding transaction:', error);
       Alert.alert('Error', 'Failed to add transaction');
@@ -91,6 +88,7 @@ export const useTransactions = () => {
       });
       if (!response.ok) throw new Error('Failed to update transaction');
       await loadData();
+      Alert.alert('Success', 'Transaction updated successfully');
     } catch (error) {
       console.error('Error updating transaction:', error);
       Alert.alert('Error', 'Failed to update transaction');
@@ -133,5 +131,6 @@ export const useTransactions = () => {
     loadData,
     updateTransaction,
     deleteTransaction,
+    fetchTransactions,
   };
 };
