@@ -20,7 +20,7 @@ connectDB();
 const app = express();
 if (process.env.NODE_ENV === 'production') job.start();
 app.use(rateLimiter);
-app.use(cors());
+app.use(cors({ origin: '*', optionsSuccessStatus: 200 }));
 app.use(cookieParser());
 app.use(bodyParser());
 app.use(helmet());

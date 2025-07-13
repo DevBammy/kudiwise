@@ -46,6 +46,7 @@ export const useTransactions = () => {
 
   const fetchTransactions = useCallback(
     async (filters = {}) => {
+      console.log('💡 Token used:', token); // Add this
       try {
         const query = new URLSearchParams(filters).toString();
         const response = await fetch(`${API_URL}/transactions?${query}`, {
@@ -53,6 +54,7 @@ export const useTransactions = () => {
         });
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
+        console.log('Fetched transactions:', data);
         setTransactions(data);
       } catch (error) {
         console.error('Failed to fetch transactions:', error);
