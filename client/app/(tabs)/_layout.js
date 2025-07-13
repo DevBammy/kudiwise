@@ -1,22 +1,31 @@
-import { Tabs } from 'expo-router';
-import { Platform } from 'react-native';
+import { Redirect, Tabs } from 'expo-router';
+import { Image, Platform } from 'react-native';
 
 import { HapticTab } from '../../components/HapticTab';
-import { IconSymbol } from '../../components/IconSymbol';
-import { TabBarBackground } from '../../components/TabBarBackground';
-import { Colors } from '../../constants/Colors';
-import { useColorScheme } from '../../hooks/useColorScheme';
+import { useAuth } from '../../context/AuthContext';
+import homeImg from '../../assets/images/home.png';
+import homeoutline from '../../assets/images/home-outline.png';
+import dashboardIcon from '../../assets/images/dashboardIcon.png';
+import dashboard from '../../assets/images/online-dashboard.png';
+import account from '../../assets/images/account.png';
+import profile from '../../assets/images/profile.png';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { loading, token } = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
+  if (!token) {
+    return <Redirect href="/login" />;
+  }
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',
@@ -28,18 +37,48 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? homeImg : homeoutline}
+              style={{
+                width: 24,
+                height: 24,
+                marginBottom: -10,
+              }}
+            />
           ),
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? dashboardIcon : dashboard}
+              style={{
+                width: 24,
+                height: 24,
+                marginBottom: -10,
+              }}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: '',
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={focused ? account : profile}
+              style={{
+                width: 24,
+                height: 24,
+                marginBottom: -10,
+              }}
+            />
           ),
         }}
       />
