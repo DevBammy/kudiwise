@@ -21,14 +21,14 @@ const Index = () => {
   } = useTransactions();
 
   useEffect(() => {
-    if (token) {
-      loadData();
-    }
-  }, [token]);
+    loadData();
+  }, []);
 
   if (!token || loading) {
     return null;
   }
+
+  console.log(loading);
 
   return (
     <>

@@ -48,6 +48,7 @@ export const useTransactions = () => {
     async (filters = {}) => {
       console.log('💡 Token used:', token); // Add this
       try {
+        setLoading(true);
         const query = new URLSearchParams(filters).toString();
         const response = await fetch(`${API_URL}/transactions?${query}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -55,8 +56,10 @@ export const useTransactions = () => {
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
         console.log('Fetched transactions:', data);
+        setLoading(false);
         setTransactions(data);
       } catch (error) {
+        setLoading(false);
         console.error('Failed to fetch transactions:', error);
       }
     },
