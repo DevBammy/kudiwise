@@ -22,17 +22,12 @@ const Index = () => {
 
   useEffect(() => {
     if (token) {
-      console.log('🔐 Token available in screen:', token);
       loadData();
     }
   }, [token]);
 
-  useEffect(() => {
-    console.log('📥 Final transactions:', transactions);
-  }, [transactions]);
-
   if (!token || loading) {
-    return null; // optionally show a loader here
+    return null;
   }
 
   return (

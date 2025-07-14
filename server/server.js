@@ -20,9 +20,15 @@ connectDB();
 const app = express();
 if (process.env.NODE_ENV === 'production') job.start();
 app.use(rateLimiter);
-app.use(cors({ origin: '*', optionsSuccessStatus: 200 }));
-app.use(cookieParser());
-app.use(bodyParser());
+app.use(
+  cors({
+    origin: '*',
+    optionsSuccessStatus: 200,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
 app.use(helmet());
 app.use(express.json());
 
