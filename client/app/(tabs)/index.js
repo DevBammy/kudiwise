@@ -95,12 +95,12 @@ const Index = () => {
         <Loading />
       ) : transactions.length === 0 ? (
         <View className="flex items-center justify-center">
-          <Error message="No transactions found" />
+          <Error message="No transactions found!" />
           <TouchableOpacity
-            className="bg-text p-4 rounded-md"
+            className="bg-blue p-4 rounded-md"
             onPress={() => router.push('/create')}
           >
-            <Text type="subtitle2" className="text-white">
+            <Text type="subtitle2" className="text-text">
               Create a new transaction
             </Text>
           </TouchableOpacity>
