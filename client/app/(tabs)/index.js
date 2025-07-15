@@ -1,14 +1,23 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from '../../components/Themed';
-import { FlatList, TouchableOpacity } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import BalanceCard from '../../components/ui/BalanceCard';
 import { useTransactions } from '../../hooks/useTransactions';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import Loading, { Error } from '../../components/ui/Loading';
+import Transactions from '../../components/ui/Transactions';
 
 const Index = () => {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
+  const userId = user?.id;
+
   const router = useRouter();
   const {
     transactions,
@@ -18,21 +27,48 @@ const Index = () => {
     updateTransaction,
     deleteTransaction,
     fetchTransactions,
-  } = useTransactions();
+  } = useTransactions(userId);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (token) {
+      loadData();
+    }
+  }, [token]);
 
-  if (!token || loading) {
-    return null;
-  }
+  if (!token) return <Error />;
+  if (loading) return <Loading />;
 
-  console.log(loading);
+  const handleDeleteTransaction = (id) => {
+    Alert.alert(
+      'Delete Transaction',
+      'Are you sure you want to delete this transaction?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => deleteTransaction(id),
+        },
+      ]
+    );
+  };
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadData().finally(() => {
+      setRefreshing(false);
+    });
+  };
+
+  console.log(transactions);
 
   return (
     <>
-      <View className="flex w-full h-full bg-bg px-4">
+      <View className="flex w-full h-max bg-bg px-4">
         <View className="pt-12 flex-row items-center justify-between">
           <View>
             <Text type="title">Hi, Emmanuel</Text>
@@ -48,14 +84,43 @@ const Index = () => {
           </View>
         </View>
 
-        <BalanceCard />
+        <BalanceCard summary={summary[0]} />
 
         <View className="my-4">
           <Text type="subtitle2">Recent Transactions</Text>
         </View>
       </View>
 
-      {/* <FlatList className="flex-1 my-4 pb-4" /> */}
+      {!token ? (
+        <Error message="Please login to continue" />
+      ) : loading ? (
+        <Loading />
+      ) : transactions.length === 0 ? (
+        <View className="flex items-center justify-center">
+          <Error message="No transactions found" />
+          <TouchableOpacity
+            className="bg-text p-4 rounded-md"
+            onPress={() => router.push('/create')}
+          >
+            <Text type="subtitle2" className="text-white">
+              Create a new transaction
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          className="flex-1 my-4 pb-4"
+          data={transactions}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListEmptyComponent={<Error />}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <Transactions item={item} onDelete={handleDeleteTransaction} />
+          )}
+        />
+      )}
     </>
   );
 };

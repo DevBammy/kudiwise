@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { API_URL } from '../constants/api';
 import { useAuth } from '../context/AuthContext';
 
-export const useTransactions = () => {
+export const useTransactions = (id) => {
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -12,6 +12,7 @@ export const useTransactions = () => {
 
   const addTransaction = async (transactionData) => {
     try {
+      setLoading(true);
       const response = await fetch(`${API_URL}/transactions`, {
         method: 'POST',
         headers: {
@@ -21,10 +22,12 @@ export const useTransactions = () => {
         body: JSON.stringify(transactionData),
       });
       if (!response.ok) throw new Error('Failed to add transaction');
+      setLoading(false);
       await loadData();
+
       Alert.alert('Success', 'Transaction added successfully');
     } catch (error) {
-      console.error('Error adding transaction:', error);
+      setLoading(false);
       Alert.alert('Error', 'Failed to add transaction');
     }
   };
@@ -49,13 +52,15 @@ export const useTransactions = () => {
       console.log('💡 Token used:', token); // Add this
       try {
         setLoading(true);
-        const query = new URLSearchParams(filters).toString();
+        const query = new URLSearchParams({
+          ...filters,
+          userId: id,
+        }).toString();
         const response = await fetch(`${API_URL}/transactions?${query}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch transactions');
         const data = await response.json();
-        console.log('Fetched transactions:', data);
         setLoading(false);
         setTransactions(data);
       } catch (error) {
@@ -63,26 +68,28 @@ export const useTransactions = () => {
         console.error('Failed to fetch transactions:', error);
       }
     },
-    [token]
+    [token, id]
   );
 
   const fetchSummary = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/summary`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      setLoading(true);
+      const response = await fetch(`${API_URL}/summary?userId=${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error('Failed to fetch summary');
       const data = await response.json();
       setSummary(data);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       console.error('Failed to fetch summary:', error);
     }
-  }, [token]);
+  }, [token, id]);
 
   const updateTransaction = async (id, updatedData) => {
     try {
+      setLoading(true);
       const response = await fetch(`${API_URL}/transactions/${id}`, {
         method: 'PUT',
         headers: {
@@ -92,9 +99,11 @@ export const useTransactions = () => {
         body: JSON.stringify(updatedData),
       });
       if (!response.ok) throw new Error('Failed to update transaction');
+      setLoading(false);
       await loadData();
       Alert.alert('Success', 'Transaction updated successfully');
     } catch (error) {
+      setLoading(false);
       console.error('Error updating transaction:', error);
       Alert.alert('Error', 'Failed to update transaction');
     }
@@ -123,7 +132,6 @@ export const useTransactions = () => {
       await loadData();
       Alert.alert('Success', 'Transaction deleted successfully');
     } catch (error) {
-      console.error('Error deleting transaction:', error);
       Alert.alert('Error', 'Failed to delete transaction');
     }
   };

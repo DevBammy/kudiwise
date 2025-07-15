@@ -1,6 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text } from '../components/Themed';
-import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  ActivityIndicator,
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -9,28 +14,39 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import data from '../data/data';
 import Pagination from '../components/onboarding/Pagination';
 import CustomButton from '../components/onboarding/CustomButton';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'expo-router';
+import Loading from '../components/ui/Loading';
 
 export default function Index() {
   const router = useRouter();
-  const { token, loading } = useAuth();
   const { width: SCREEN_WIDTH } = useWindowDimensions();
   const flatListRef = useAnimatedRef(null);
   const x = useSharedValue(0);
   const flatListIndex = useSharedValue(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      router.replace('/(tabs)');
-    }
-  }, [token]);
+    const checkFirstLaunch = async () => {
+      try {
+        const hasLaunched = await AsyncStorage.getItem('hasLaunched');
+        if (hasLaunched) {
+          router.replace('/login');
+        } else {
+          await AsyncStorage.setItem('hasLaunched', 'true');
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error checking launch status:', error);
+      }
+    };
 
-  if (loading || token) return null;
+    checkFirstLaunch();
+  }, []);
 
   const onViewableItemsChanged = ({ viewableItems }) => {
     flatListIndex.value = viewableItems[0].index;
@@ -66,11 +82,12 @@ export default function Index() {
       );
       return {
         opacity: opacityAnimation,
-        width: SCREEN_WIDTH * 1,
-        height: SCREEN_WIDTH * 1,
+        width: SCREEN_WIDTH,
+        height: SCREEN_WIDTH,
         transform: [{ translateY: translateYAnimation }],
       };
     });
+
     const textAnimationStyle = useAnimatedStyle(() => {
       const opacityAnimation = interpolate(
         x.value,
@@ -98,6 +115,7 @@ export default function Index() {
         transform: [{ translateY: translateYAnimation }],
       };
     });
+
     return (
       <View style={[styles.itemContainer, { width: SCREEN_WIDTH }]}>
         <Animated.Image source={item.image} style={imageAnimationStyle} />
@@ -113,20 +131,24 @@ export default function Index() {
     );
   };
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Animated.FlatList
         ref={flatListRef}
         onScroll={onScroll}
         data={data}
-        renderItem={({ item, index }) => {
-          return <RenderItem item={item} index={index} />;
-        }}
-        keyExtractor={(item) => item.id}
+        renderItem={({ item, index }) => (
+          <RenderItem item={item} index={index} />
+        )}
+        keyExtractor={(item) => item.id.toString()}
         scrollEventThrottle={16}
-        horizontal={true}
+        horizontal
         bounces={false}
-        pagingEnabled={true}
+        pagingEnabled
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{
@@ -150,6 +172,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8E9B0',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   itemContainer: {
     flex: 1,

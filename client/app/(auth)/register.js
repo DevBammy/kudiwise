@@ -2,7 +2,7 @@ import { View, Text } from '../../components/Themed';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Image, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, Image, TextInput, TouchableOpacity } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useAuth } from '../../context/AuthContext';
 import { API_URL } from '../../constants/api';
@@ -24,12 +24,10 @@ const Register = () => {
     });
     const data = await res.json();
 
-    console.log(data);
-
     if (res.ok) {
       login(data.token, data.user);
-      console.log('success');
-      Alert.alert('Registration Successful');
+      router.replace('/login');
+      Alert.alert('Registration Successful, Please login');
     } else {
       console.log(data.message);
       Alert.alert('Registration failed', data.message);
