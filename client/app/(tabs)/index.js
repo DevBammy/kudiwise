@@ -64,14 +64,12 @@ const Index = () => {
     });
   };
 
-  console.log(transactions);
-
   return (
     <>
       <View className="flex w-full h-max bg-bg px-4">
         <View className="pt-12 flex-row items-center justify-between">
           <View>
-            <Text type="title">Hi, Emmanuel</Text>
+            <Text type="title">Hi, {user?.name?.split(' ')[0]}</Text>
             <Text type="subtitle">Welcome Back!</Text>
           </View>
           <View>
