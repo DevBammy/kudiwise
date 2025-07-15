@@ -16,6 +16,7 @@ export function Text({ style, type = 'default', ...rest }) {
     type === 'defaultSemiBold' && styles.defaultSemiBold,
     type === 'subtitle' && styles.subtitle,
     type === 'subtitle2' && styles.subtitle2,
+    type === 'capitalised' && styles.capitalised,
     type === 'link' && styles.link,
     style,
   ];
@@ -51,6 +52,11 @@ const styles = StyleSheet.create({
   subtitle2: {
     fontSize: 18,
     fontFamily: 'big',
+  },
+  capitalised: {
+    fontSize: 18,
+    fontFamily: 'reg',
+    textTransform: 'capitalize',
   },
   link: {
     lineHeight: 30,

@@ -107,7 +107,7 @@ const Index = () => {
         </View>
       ) : (
         <FlatList
-          className="flex-1 my-4 pb-4"
+          className="flex-1 my-4 pb-4 px-4"
           data={transactions}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
