@@ -5,7 +5,12 @@ import { useAuth } from '../context/AuthContext';
 
 export const useTransactions = (id) => {
   const [transactions, setTransactions] = useState([]);
-  const [summary, setSummary] = useState([]);
+  const [summary, setSummary] = useState({
+    balance: 0,
+    income: 0,
+    expenses: 0,
+  });
+
   const [loading, setLoading] = useState(false);
 
   const { token } = useAuth();
@@ -49,7 +54,6 @@ export const useTransactions = (id) => {
 
   const fetchTransactions = useCallback(
     async (filters = {}) => {
-      console.log('💡 Token used:', token); // Add this
       try {
         setLoading(true);
         const query = new URLSearchParams({
@@ -72,18 +76,26 @@ export const useTransactions = (id) => {
   );
 
   const fetchSummary = useCallback(async () => {
+    if (!token || !id) return;
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await fetch(`${API_URL}/summary?userId=${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error('Failed to fetch summary');
       const data = await response.json();
-      setSummary(data);
-      setLoading(false);
+
+      const parsed = Array.isArray(data) ? data[0] : data;
+
+      setSummary({
+        balance: parsed.balance || 0,
+        income: parsed.income || 0,
+        expenses: parsed.expense || 0, // normalize
+      });
     } catch (error) {
-      setLoading(false);
       console.error('Failed to fetch summary:', error);
+    } finally {
+      setLoading(false);
     }
   }, [token, id]);
 

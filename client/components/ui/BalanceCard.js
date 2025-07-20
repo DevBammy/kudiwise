@@ -25,7 +25,6 @@ const BalanceCard = ({ summary }) => {
             <View>
               <Text type="subtitle">Income</Text>
               <Text type="subtitle2">
-                {' '}
                 {summary?.income === undefined
                   ? formatCurrency(0)
                   : formatCurrency(summary?.income)}
@@ -40,10 +39,9 @@ const BalanceCard = ({ summary }) => {
             <View>
               <Text type="subtitle">Expense</Text>
               <Text type="subtitle2">
-                {' '}
-                {summary?.expense === undefined
+                {summary?.expenses === undefined
                   ? formatCurrency(0)
-                  : formatCurrency(summary?.expense)}
+                  : formatCurrency(summary?.expenses)}
               </Text>
             </View>
           </View>

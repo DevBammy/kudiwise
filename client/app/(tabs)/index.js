@@ -29,6 +29,7 @@ const Index = () => {
     fetchTransactions,
   } = useTransactions(userId);
   const [refreshing, setRefreshing] = useState(false);
+  const displaySummary = Array.isArray(summary) ? summary[0] : summary;
 
   useEffect(() => {
     if (token) {
@@ -82,7 +83,7 @@ const Index = () => {
           </View>
         </View>
 
-        <BalanceCard summary={summary[0]} />
+        <BalanceCard summary={displaySummary} />
 
         <View className="my-4">
           <Text type="subtitle2">Recent Transactions</Text>
